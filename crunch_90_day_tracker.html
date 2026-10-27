@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14213d">
+<title>50 Crunches in 90 Days</title>
+<style>
+:root{--navy:#14213d;--blue:#2457c5;--pale:#eef3ff;--green:#16794b;--ink:#182230;--muted:#647084;--line:#dce2eb;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--navy);color:white;padding:26px 18px 22px;padding-top:calc(26px + env(safe-area-inset-top));}
+.wrap{max-width:850px;margin:auto}h1{font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.1;margin:0 0 8px}header p{margin:0;color:#dce6ff}
+main{max-width:850px;margin:auto;padding:16px 14px 40px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px;box-shadow:0 3px 12px #17233b0a}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:var(--pale);border-radius:12px;padding:12px 8px;text-align:center}.stat strong{display:block;font-size:1.5rem;color:var(--navy)}.stat span{font-size:.78rem;color:var(--muted)}
+h2{font-size:1.15rem;margin:0 0 10px}h3{font-size:1rem;margin:0 0 6px}
+label{display:block;font-weight:600;margin:10px 0 5px}input,select,button{font:inherit}input[type=date]{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:white}
+.progress{height:10px;background:#e6eaf1;border-radius:99px;overflow:hidden;margin:10px 0 5px}.bar{height:100%;background:var(--blue);width:0%;transition:width .2s}
+.week{border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden;background:#fff}.weekhead{background:#f0f4fa;padding:12px 13px;display:flex;justify-content:space-between;gap:8px;align-items:center}.weekhead small{color:var(--muted)}
+.day{padding:13px;border-top:1px solid var(--line)}.daytop{display:flex;gap:10px;align-items:flex-start}.daytop input{width:22px;height:22px;accent-color:var(--green);flex-shrink:0;margin-top:2px}.daytitle{font-weight:700}.dose{color:var(--blue);font-weight:700;margin:3px 0}.detail{font-size:.9rem;color:var(--muted)}.done{opacity:.68}.done .daytitle{text-decoration:line-through}
+button{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:white;font-weight:650;cursor:pointer}.secondary{background:#e9edf5;color:var(--navy)}.danger{background:#fff0f0;color:#a12b2b}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.note{font-size:.9rem;color:var(--muted)}.callout{background:#fff8e8;border-left:4px solid #d89b22;padding:12px;border-radius:8px;font-size:.92rem}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:8px}
+@media(min-width:620px){.day{display:flex;justify-content:space-between;gap:20px}.daytop{flex:1}.day .detail{max-width:280px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>50 Crunches in 90 Days</h1><p>A five-day-a-week plan with a built-in tracker. Start from a current max of 5.</p></div></header>
+<main>
+<section class="card">
+ <div class="stats">
+  <div class="stat"><strong id="completed">0</strong><span>Workouts done</span></div>
+  <div class="stat"><strong id="percent">0%</strong><span>Plan complete</span></div>
+  <div class="stat"><strong id="streak">0</strong><span>Current streak</span></div>
+ </div>
+ <div class="progress"><div class="bar" id="bar"></div></div>
+ <p class="note" id="progressText">Check off each workout as you finish it. Your progress saves on this device.</p>
+ <label for="startDate">Start date</label><input id="startDate" type="date">
+ <p class="note">Choose your start date. The plan runs for 90 calendar days; training is scheduled Monday–Friday, with weekends for recovery. The final goal test is on Day 90.</p>
+</section>
+<section class="card">
+ <h2>How to use the plan</h2>
+ <p>Complete the prescribed sets with <b>45–90 seconds of rest</b> between sets. Keep the movement controlled; stop a set when your form breaks down. The listed reps are a target, not a reason to strain.</p>
+ <div class="callout"><b>Form & safety:</b> Lie on your back with knees bent and feet flat. Cross arms over your chest or place fingertips lightly by your temples. Curl your shoulders up using your abs, then lower slowly. Don’t pull your neck or use momentum. Stop for sharp pain, especially in your neck or back.</div>
+ <p class="note">If you cannot complete a target with good form, do fewer reps and repeat that week before progressing. Crunches train abdominal endurance; they are not a substitute for balanced strength training.</p>
+</section>
+<section class="card">
+ <h2>Workout tracker</h2>
+ <p class="note">Five sessions each week. The plan has 13 training weeks; only sessions that fall within the first 90 days are shown, plus the Day 90 test.</p>
+ <div id="plan"></div>
+ <div class="buttons">
+  <button id="exportBtn" class="secondary">Export my progress</button>
+  <button id="resetBtn" class="danger">Reset progress</button>
+ </div>
+ <p class="note">Export downloads a backup JSON file. Progress is stored in this browser on this iPhone; it won’t automatically sync to other devices.</p>
+</section>
+<footer>Built for steady progress, not all-out daily testing.</footer>
+</main>
+<script>
+const weeks = [
+ {name:"Foundation", days:[
+  ["3 × 3","Easy technique; stop well before failure."],["4 × 3","Smooth reps, full control."],["3 × 4","Rest 60–90 sec."],["4 × 4","Keep every rep crisp."],["2 × 4","Easy recovery session."]]},
+ {name:"Foundation+",days:[
+  ["4 × 4","Controlled pace."],["3 × 5","Leave 1–2 reps in reserve."],["4 × 4","No neck pulling."],["3 × 5","Slow lowering phase."],["2 × 5","Easy session."]]},
+ {name:"Build 1",days:[
+  ["4 × 5","Comfortable effort."],["3 × 6","Rest up to 90 sec."],["4 × 5","Consistent range of motion."],["3 × 6","Stop before form slips."],["2 × 5","Easy session."]]},
+ {name:"Build 2",days:[
+  ["4 × 6","Smooth, steady reps."],["3 × 7","Rest 60–90 sec."],["4 × 6","Controlled lowering."],["3 × 7","No momentum."],["2 × 6","Easy session."]]},
+ {name:"Build 3",days:[
+  ["4 × 7","Stay relaxed through the neck."],["3 × 8","Rest as needed."],["4 × 7","Good form first."],["3 × 8","Leave a little in reserve."],["2 × 6","Easy session."]]},
+ {name:"Build 4",days:[
+  ["4 × 8","Controlled pace."],["3 × 9","Rest 60–90 sec."],["4 × 8","Keep reps consistent."],["3 × 10","Stop if form slips."],["2 × 7","Easy session."]]},
+ {name:"Endurance 1",days:[
+  ["3 × 10","Build volume, not speed."],["4 × 8","Rest 60–90 sec."],["3 × 11","Controlled reps."],["4 × 8","Leave 1–2 reps in reserve."],["2 × 8","Easy session."]]},
+ {name:"Endurance 2",days:[
+  ["3 × 12","Steady pace."],["4 × 9","Rest as needed."],["3 × 12","Smooth reps."],["3 × 10","Avoid straining."],["2 × 8","Easy session."]]},
+ {name:"Endurance 3",days:[
+  ["3 × 13","Controlled range."],["4 × 10","Rest 60–90 sec."],["3 × 14","Stay consistent."],["3 × 10","Comfortable effort."],["2 × 9","Easy session."]]},
+ {name:"Endurance 4",days:[
+  ["3 × 15","Steady breathing."],["4 × 10","Rest as needed."],["3 × 15","Good technique."],["3 × 11","Do not rush."],["2 × 10","Easy session."]]},
+ {name:"Peak 1",days:[
+  ["3 × 16","Keep form strict."],["4 × 11","Rest 60–90 sec."],["3 × 17","Controlled pace."],["3 × 12","Stop before failure."],["2 × 10","Easy session."]]},
+ {name:"Peak 2",days:[
+  ["3 × 18","Break sets if needed."],["3 × 14","Rest 60–90 sec."],["2 × 20","Only if form stays clean; otherwise 3 × 12."],["3 × 12","Light effort."],["2 × 8","Very easy; prepare to test."]]},
+ {name:"Taper & test",days:[
+  ["2 × 12","Easy; finish feeling fresh."],["2 × 10","Easy technique."],["Rest / mobility","No crunches; gentle walk or stretch."],["Rest","Save energy."],["Rest","No hard core work."]]}
+];
+const KEY="crunch90tracker_v1";
+let state={startDate:"",done:{},};
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||"{}");state={...state,...x};}catch(e){}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderStats();}
+function isoDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dateAt(offset){const d=new Date(state.startDate+"T12:00:00");d.setDate(d.getDate()+offset);return d}
+function fmt(d){return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+function render(){
+ const root=document.getElementById("plan");root.innerHTML="";
+ let dayIndex=0;
+ weeks.forEach((w,wi)=>{
+  const box=document.createElement("div");box.className="week";
+  const head=document.createElement("div");head.className="weekhead";
+  const first=wi*7;const last=Math.min(first+6,89);
+  head.innerHTML=`<div><b>Week ${wi+1}: ${w.name}</b><br><small>${fmt(dateAt(first))} – ${fmt(dateAt(last))}</small></div><small>Days ${first+1}–${last+1}</small>`;
+  box.appendChild(head);
+  w.days.forEach((item,di)=>{
+   const offset=wi*7+di;
+   if(offset>=90)return;
+   // Training sessions are weekdays; each week has five planned sessions.
+   const d=dateAt(offset);
+   const isRest=item[0].toLowerCase().includes("rest");
+   const key="d"+offset;
+   const row=document.createElement("div");row.className="day"+(state.done[key]?" done":"");
+   const label=document.createElement("label");label.className="daytop";
+   const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!state.done[key];cb.setAttribute("aria-label","Mark day "+(offset+1)+" complete");
+   cb.addEventListener("change",()=>{state.done[key]=cb.checked;save();render();});
+   const txt=document.createElement("div");
+   txt.innerHTML=`<div class="daytitle">Day ${offset+1} · ${fmt(d)}${isRest?"":" · Session "+(di+1)}</div><div class="dose">${item[0]}</div><div class="detail">${item[1]}</div>`;
+   label.append(cb,txt);row.appendChild(label);box.appendChild(row);
+  });
+  root.appendChild(box);
+ });
+ const test=document.createElement("div");test.className="week";
+ test.innerHTML=`<div class="weekhead"><div><b>Day 90: Goal test</b><br><small>${fmt(dateAt(89))}</small></div><small>Final day</small></div>`;
+ const row=document.createElement("div");row.className="day"+(state.done["test"]?" done":"");
+ const label=document.createElement("label");label.className="daytop";
+ const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!state.done["test"];cb.setAttribute("aria-label","Mark goal test complete");
+ cb.addEventListener("change",()=>{state.done.test=cb.checked;save();render();});
+ const txt=document.createElement("div");txt.innerHTML='<div class="daytitle">One continuous set</div><div class="dose">Aim for 50 crunches</div><div class="detail">Warm up gently, then perform as many strict, pain-free reps as you can. Stop if form breaks down. If you fall short, record your result and repeat the last comfortable training week.</div>';
+ label.append(cb,txt);row.append(label);test.append(row);root.append(test);
+ renderStats();
+}
+function renderStats(){
+ const keys=Object.keys(state.done).filter(k=>state.done[k]);
+ const workoutKeys=keys.filter(k=>k!=="test");
+ const total=65; // 13 weeks × 5 scheduled sessions; final goal test is tracked separately.
+ document.getElementById("completed").textContent=workoutKeys.length;
+ document.getElementById("percent").textContent=Math.min(100,Math.round(workoutKeys.length/total*100))+"%";
+ document.getElementById("bar").style.width=Math.min(100,workoutKeys.length/total*100)+"%";
+ let streak=0;for(let i=89;i>=0;i--){if(state.done["d"+i])streak++;else if(streak>0)break;}
+ document.getElementById("streak").textContent=streak;
+ document.getElementById("progressText").textContent=state.done.test?"Goal test marked complete. Nice work tracking your 90 days.":"The final goal test is tracked separately from the 65 training sessions.";
+}
+document.getElementById("startDate").addEventListener("change",e=>{if(e.target.value){state.startDate=e.target.value;save();render();}});
+document.getElementById("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="crunch-90-progress.json";a.click();URL.revokeObjectURL(a.href);});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Reset all checkmarks and the start date? This cannot be undone unless you exported a backup.")){state={startDate:isoDate(new Date()),done:{}};document.getElementById("startDate").value=state.startDate;save();render();}});
+load();if(!state.startDate)state.startDate=isoDate(new Date());document.getElementById("startDate").value=state.startDate;render();
+</script>
+</body></html>
